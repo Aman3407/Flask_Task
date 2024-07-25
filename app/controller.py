@@ -35,11 +35,7 @@ def createEmployeeController():
 
         # Validate email format
         if not isValid(email):
-            return jsonify({
-                'status': '403',
-                'res': 'failure',
-                'error': 'Invalid email format. Please enter a valid email address'
-            })
+            return ValueError('Invalid email format. Please enter a valid email address')
 
         # Check if emp_id or email already exists
         existing_emps = [emp.serialize() for emp in db.view()]
@@ -48,12 +44,12 @@ def createEmployeeController():
                 return jsonify({
                     'error': f"Employee with emp_id '{emp_id}' already exists",
                     'status': '400'
-                })
+                }),404
             if emp['email'] == email:
                 return jsonify({
                     'error': f"Employee with email '{email}' already exists",
                     'status': '400'
-                })
+                }),404
 
         # Create the employee object with correct attribute values
         emp = Employee(
@@ -117,7 +113,7 @@ def getEmployeeDetailsController(emp_id) :
             'error': f"Error! Employee with emp_id '{emp_id}' was not found!",
             'res': '',
             'status': '404'
-        })
+        }),404
 
 def UpdateEmployeeController(emp_id) :
     try:
@@ -137,7 +133,7 @@ def UpdateEmployeeController(emp_id) :
             return jsonify({
                 'error': f"Error! Employee with emp_id '{emp_id}' not found.",
                 'status': '404'
-            })
+            }),404
 
         # If a field is not provided in the request, retain the existing value from the database
         if name is None:
@@ -154,7 +150,7 @@ def UpdateEmployeeController(emp_id) :
             return jsonify({
                 'error': "dateOfJoining must be in YYYY-MM-DD format",
                 'status': '400'
-            })
+            }),400
 
         # Convert isActive to boolean if it's an int
         if isinstance(isActive, int):
@@ -317,11 +313,11 @@ def DeleteEmployeeController(emp_id):
         return jsonify({
             'error': f"Employee Id Not Found!",
             'res': '',
-            'status': '404'
-        })
+            'status':'404'
+        }),404
     else:
         return jsonify({
             'error': f"Error ⛔❌! No employee ID sent!",
             'res': '',
-            'status': '404'
-        })
+            'status':'404'
+        }), 404
